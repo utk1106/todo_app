@@ -3,6 +3,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
+from django.utils import timezone
 
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -47,6 +48,7 @@ class TaskList(LoginRequiredMixin,ListView):
         context = super().get_context_data(**kwargs)
         context['tasks'] = context['tasks'].filter(user=self.request.user)
         context['count'] = context['tasks'].filter(complete=False).count()
+        context['now'] = timezone.now() #add current time for due soon highlighting
         return context
 
 class TaskDetail(LoginRequiredMixin,DetailView):
@@ -56,7 +58,7 @@ class TaskDetail(LoginRequiredMixin,DetailView):
 
 class TaskCreate(LoginRequiredMixin,CreateView):
     model = Task
-    fields = ['title', 'description', 'complete']
+    fields = ['title', 'description', 'complete', 'due_date'] #added due_date for cron job
     success_url = reverse_lazy('tasks')
 
     def form_valid(self, form):
@@ -65,10 +67,15 @@ class TaskCreate(LoginRequiredMixin,CreateView):
 
 class TaskUpdate(LoginRequiredMixin,UpdateView):
     model = Task
-    fields = ['title', 'description', 'complete']
+    fields = ['title', 'description', 'complete', 'due_date'] #added due_date for cron job
     success_url = reverse_lazy('tasks')
+
+#reminded isn’t included in fields because it’s managed by the cron job, not the user
 
 class DeleteView(LoginRequiredMixin,DeleteView):
     model = Task
     context_object_name = 'task'
     success_url = reverse_lazy('tasks')
+
+
+    #how to do it in falsk ---this part

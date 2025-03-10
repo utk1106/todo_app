@@ -7,9 +7,14 @@ class Task(models.Model):
     description = models.TextField(null=True, blank=True)
     complete = models.BooleanField(default=False)
     create = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateTimeField(null=True, blank=True) #added for cron job
+    reminded = models.BooleanField(default=False)  # Added for cron job
+
+    #after adding due_date and reminded and running python3 manage.py makemigrations, migration folder added new field
+    # and after than running python3 manage.py migrate, the new field was added to the database sql3
 
     def __str__(self):
         return self.title
     
     class Meta:
-        ordering = ['complete']
+        ordering = ['complete', 'due_date']
