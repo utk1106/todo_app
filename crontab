@@ -1,0 +1,3 @@
+# Run a Django management command every 5 minutes
+*/5 * * * * python /app/manage.py your_command >> /app/cron.log 2>&1
+#
