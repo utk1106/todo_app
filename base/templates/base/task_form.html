@@ -5,3 +5,21 @@
     {{form.as_p}}
     <input type="submit" value="Submit">
 </form>
+
+<script>
+    // Add date-time picker functionality to the due_date field
+    document.addEventListener('DOMContentLoaded', function() {
+        var dueDateField = document.querySelector('input[name="due_date"]');
+        if (dueDateField) {
+            dueDateField.type = 'datetime-local';
+            
+            // Set a default value of current time + 24 hours
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            // Format for datetime-local input (YYYY-MM-DDThh:mm)
+            var formattedDate = tomorrow.toISOString().slice(0, 16);
+            dueDateField.value = formattedDate;
+        }
+    });
+</script>

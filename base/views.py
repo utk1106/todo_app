@@ -56,6 +56,12 @@ class TaskDetail(LoginRequiredMixin,DetailView):
     context_object_name = 'task'
     template_name = 'base/task.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        return context 
+    #to show more task details
+
 class TaskCreate(LoginRequiredMixin,CreateView):
     model = Task
     fields = ['title', 'description', 'complete', 'due_date'] #added due_date for cron job

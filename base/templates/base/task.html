@@ -1,1 +1,39 @@
 <h1>Task: {{task}}</h1>
+<div>
+    <p><strong>Description:</strong> {% if task.description %}{{ task.description }}{% else %}No description provided{% endif %}</p>
+    
+    <p><strong>Status:</strong> 
+        {% if task.complete %}
+            <span>Completed</span>
+        {% else %}
+            <span>Pending</span>
+        {% endif %}
+    </p>
+    
+    {% if task.due_date %}
+    <p><strong>Due Date:</strong> {{ task.due_date|date:"F d, Y - h:i a" }}</p>
+    
+    <p><strong>Reminder Status:</strong> 
+        {% if task.reminded %}
+            Reminder has been sent
+        {% else %}
+            {% if task.due_date > now %}
+                Reminder will be sent 24 hours before the due date
+            {% else %}
+                Reminder may be sent soon
+            {% endif %}
+        {% endif %}
+    </p>
+    {% else %}
+    <p><strong>Due Date:</strong> No due date set</p>
+    {% endif %}
+    
+    <p><strong>Created:</strong> {{ task.create|date:"F d, Y" }}</p>
+</div>
+<div>
+    <a href="{% url 'tasks' %}">Back to Tasks</a>
+    <a href="{% url 'task-update' task.id %}">Edit</a>
+    <a href="{% url 'task-delete' task.id %}">Delete</a>
+</div>
+
+<!-- <h1>Task: {{task}}</h1> -->
