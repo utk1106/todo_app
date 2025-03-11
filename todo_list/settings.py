@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,8 @@ SECRET_KEY = 'django-insecure-j!$*ueyy9++c#82vlttmo74*-r2gptp_ve4p3mc7b-*=rjd7$m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+#allow docker host
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -125,17 +127,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email settings for development (prints emails to console)
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# For production, use something like this (e.g., Gmail SMTP):
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'your-email@gmail.com'
-# EMAIL_HOST_PASSWORD = 'your-app-specific-password'
-
-# Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
-DEFAULT_FROM_EMAIL = 'noreply@todoapp.com'
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'thaokarutkarsh@gmail.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'rubv ikqq snyw mqdg'  # Replace with your app password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
