@@ -27,7 +27,10 @@ SECRET_KEY = 'django-insecure-j!$*ueyy9++c#82vlttmo74*-r2gptp_ve4p3mc7b-*=rjd7$m
 DEBUG = True
 
 #allow docker host
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    "todo-app-4kmm.onrender.com"
+]
+# ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -135,3 +138,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'thaokarutkarsh@gmail.com'  # Replace with your Gmail address
 EMAIL_HOST_PASSWORD = 'rubv ikqq snyw mqdg'  # Replace with your app password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://todo-app-4kmm.onrender.com",
+]
