@@ -22,7 +22,34 @@ RUN chmod 0644 /etc/cron.d/my-cron-job && crontab /etc/cron.d/my-cron-job
 
 EXPOSE 8000
 
-CMD cron && python manage.py runserver 0.0.0.0:8000
+CMD ["gunicorn", "todo_list.wsgi:application", "--bind", "0.0.0.0:8000"]
+
+
+# FROM python:3.11-slim
+
+# WORKDIR /app
+
+# ENV PYTHONUNBUFFERED=1 \
+#     PYTHONDONTWRITEBYTECODE=1
+
+# # Install system dependencies
+# RUN apt-get update && apt-get install -y \
+#     cron \
+#     bpfcc-tools \
+#     python3-bpfcc \
+#     && rm -rf /var/lib/apt/lists/*
+
+# COPY requirements.txt .
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# COPY . .
+
+# COPY crontab /etc/cron.d/my-cron-job
+# RUN chmod 0644 /etc/cron.d/my-cron-job && crontab /etc/cron.d/my-cron-job
+
+# EXPOSE 8000
+
+# CMD cron && python manage.py runserver 0.0.0.0:8000
 
 
 # Use an official Python runtime as the base image
