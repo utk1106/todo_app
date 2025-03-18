@@ -22,4 +22,4 @@ urlpatterns = [
     path('', include('base.urls')),
 ]
 
-print("hi")
+# print("hi")

@@ -1,5 +1,8 @@
 version: '3'
-
+# docker compose yml files ties everything together
+#Starts web (Django app), nginx (web server), and cron (scheduler).
+#Maps ports (80 for Nginx, 8000 internal for web).
+#Links volumes for static files.
 services:
   web:
     build: .
@@ -11,7 +14,12 @@ services:
       - DEBUG=0
     expose:
       - "8000"  # Internal port for Nginx
-
+# web: Runs the Django app with Gunicorn on port 8000.
+#   build: .: Builds the image using the Dockerfile in the current directory.
+#   command: gunicorn todo_list.wsgi:application --bind 0.0.0.0:8000: Starts Gunicorn to serve the app.
+#   volumes: Shares code and static files between host and container.
+#   environment: Sets DEBUG=0 for production mode.
+#   expose: "8000": Opens port 8000 internally for Nginx.
   nginx:
     image: nginx:latest
     ports:
@@ -21,7 +29,8 @@ services:
       - static_data:/usr/share/nginx/html/static
     depends_on:
       - web
-
+#   volumes: Links Nginx config and static files to the container.
+#   depends_on: - web: Ensures the web service starts first.
   cron:
     build: .
     command: cron -f
@@ -30,6 +39,12 @@ services:
 
 volumes:
   static_data:
+  
+# cron: Runs scheduled tasks in the background.
+#   build: .: Uses the same Dockerfile as the web service.
+#   command: cron -f: Starts the cron daemon in foreground mode.
+#   volumes: Shares code with the container.
+# volumes: static_data: Creates a shared storage for static files across services.
 
 # services:
 #   web:

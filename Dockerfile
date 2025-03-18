@@ -1,9 +1,13 @@
-FROM python:3.11-slim
+#Builds the web and cron containers with Python, Gunicorn, and cron setup.
+FROM python:3.11-slim 
+#as the base image (small and efficient).
 
 WORKDIR /app
+#Sets the working directory to /app inside the container.
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
+#Sets environment variables to keep Python output unbuffered and skip bytecode files.
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -12,18 +16,30 @@ RUN apt-get update && apt-get install -y \
     python3-bpfcc \
     && rm -rf /var/lib/apt/lists/*
 
+# RUN apt-get ...: Installs `cron` (for scheduling), `bpfcc-tools`, and `python3-bpfcc` (for monitoring), then cleans up.
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+# COPY requirements.txt ...: Copies the dependency list and installs them with `pip`
 
 COPY . .
+# COPY . .: Copies all project files into the container.
 
 COPY crontab /etc/cron.d/my-cron-job
 RUN chmod 0644 /etc/cron.d/my-cron-job && crontab /etc/cron.d/my-cron-job
+# COPY crontab ...: Adds a cron job file, sets permissions, and activates it.
 
 EXPOSE 8000
+# EXPOSE 8000: Opens port 8000 for the app.
 
 CMD ["gunicorn", "todo_list.wsgi:application", "--bind", "0.0.0.0:8000"]
+# CMD: Runs Gunicorn to serve the Django app on port 8000.
 
+
+# Gunicorn: A Python WSGI server that runs web applications like Django.
+# What it does: Takes web requests (e.g., from users visiting your site) and passes them to your app.
+# Why use it: Faster and more reliable than Django’s built-in server, good for production.
+# How it works: Listens on a port (e.g., 8000) and manages multiple workers to handle requests.
 
 # FROM python:3.11-slim
 

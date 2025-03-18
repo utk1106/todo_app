@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-j!$*ueyy9++c#82vlttmo74*-r2gptp_ve4p3mc7b-*=rjd7$m
 DEBUG = True
 
 #allow docker host
-ALLOWED_HOSTS = ['192.168.29.150']  # Your private IP
+ALLOWED_HOSTS = ['10.145.62.197', 'localhost', '127.0.0.1', '*', '192.168.14.47']  # Your private IP
 # ALLOWED_HOSTS = ['*']
 
 
@@ -138,6 +138,6 @@ EMAIL_HOST_USER = 'thaokarutkarsh@gmail.com'  # Replace with your Gmail address
 EMAIL_HOST_PASSWORD = 'rubv ikqq snyw mqdg'  # Replace with your app password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-CSRF_TRUSTED_ORIGINS = ['http://192.168.29.150']  # For CSRF with Nginx
+CSRF_TRUSTED_ORIGINS = ['http://10.145.62.197','http://localhost', 'http://192.168.14.47']  # For CSRF with Nginx
 
 # ["https://todo-app-4kmm.onrender.com"]
