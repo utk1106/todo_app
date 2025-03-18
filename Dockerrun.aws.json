@@ -1,0 +1,15 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Image": {
+      "Name": "721607229558.dkr.ecr.ap-south-1.amazonaws.com/todo-app:latest",
+      "Update": "true"
+    },
+    "Ports": [
+      {
+        "ContainerPort": 8000,
+        "HostPort": 80
+      }
+    ],
+    "Logging": "/var/log/nginx"
+  }
+  

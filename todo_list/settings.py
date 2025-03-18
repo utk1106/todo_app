@@ -27,8 +27,8 @@ SECRET_KEY = 'django-insecure-j!$*ueyy9++c#82vlttmo74*-r2gptp_ve4p3mc7b-*=rjd7$m
 DEBUG = True
 
 #allow docker host
-ALLOWED_HOSTS = ['10.145.62.197', 'localhost', '127.0.0.1', '*', '192.168.14.47']  # Your private IP
-# ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['10.145.62.197', 'localhost', '127.0.0.1', '*', '192.168.14.47']  # Your private IP
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

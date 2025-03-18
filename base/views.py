@@ -20,8 +20,8 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        return reverse_lazy('tasks')
-    
+        return reverse_lazy('tasks') #print username
+
 class RegisterPage(FormView):
     template_name = 'base/register.html'
     form_class = UserCreationForm
