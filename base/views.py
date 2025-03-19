@@ -4,6 +4,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.http import JsonResponse, HttpResponseRedirect
 
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -16,11 +17,48 @@ from .models import Task
 
 class CustomLoginView(LoginView):
     template_name = 'base/login.html'
-    fields = '__all__'
+    # fields = '__all__'
     redirect_authenticated_user = True
+
+    # def form_valid(self, form):
+    #     # response = super().form_valid(form)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if 'json' in self.request.headers.get('Accept', '').lower():
+                return JsonResponse({
+                "status": "success",
+                "message": "Login worked",
+                "redirect_to": self.get_success_url(),
+                "accept_header": self.request.headers.get('Accept', 'Not sent')
+            })
+        return HttpResponseRedirect(self.get_success_url())
+        
+        # if self.request.headers.get('Accept') == 'application/json':
+        #     # Postman or API client: return JSON
+        #     return JsonResponse({
+        #         "status": "success",
+        #         "message": "login worked",
+        #         # "redirect_to": self.get_success_url()
+        #     })
+        # # Browser: redirect as usual
+        # return HttpResponseRedirect(self.get_success_url())  # Should redirect
+        # return JsonResponse({
+        #     "status":"success",
+        #     "message":"login worked",
+        #     # "redirect_to":self.get_success_url
+        # })
 
     def get_success_url(self):
         return reverse_lazy('tasks') #print username
+
+#class CustomLoginView(LoginView):
+    # template_name = 'base/login.html'
+    # fields = '__all__'
+    # redirect_authenticated_user = True
+
+    # def get_success_url(self):
+    #     return reverse_lazy('tasks') #print username
 
 class RegisterPage(FormView):
     template_name = 'base/register.html'
