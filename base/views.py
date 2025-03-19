@@ -29,8 +29,8 @@ class CustomLoginView(LoginView):
                 return JsonResponse({
                 "status": "success",
                 "message": "Login worked",
-                "redirect_to": self.get_success_url(),
-                "accept_header": self.request.headers.get('Accept', 'Not sent')
+                "redirect_to": self.get_success_url()
+                # "accept_header": self.request.headers.get('Accept', 'Not sent')
             })
         return HttpResponseRedirect(self.get_success_url())
         
