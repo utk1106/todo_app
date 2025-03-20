@@ -7,6 +7,13 @@ from django.utils import timezone
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from .models import Task
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -34,7 +41,29 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy('tasks')
+    
+class LogoutAPI(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+            if not refresh_token:
+                return Response(
+                    {"status": "error", "message": "Refresh token is required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(
+                {"status": "success", "message": "Successfully logged out"},
+                status=status.HTTP_200_OK
+            )
+        except TokenError as e:
+            return Response(
+                {"status": "error", "message": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 # @method_decorator(csrf_exempt, name='dispatch')
 # class CustomLoginView(LoginView):
 #     template_name = 'base/login.html'
@@ -285,3 +314,87 @@ class DeleteView(LoginRequiredMixin, DeleteView):
 
 
     #how to do it in falsk ---this part
+# New API views using JWT
+class TaskListAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        tasks = Task.objects.filter(user=request.user)
+        count = tasks.filter(complete=False).count()
+        tasks_data = list(tasks.values('id', 'title', 'description', 'complete', 'due_date'))
+        return Response({
+            "status": "success",
+            "tasks": tasks_data,
+            "count": count,
+            "now": timezone.now().isoformat()
+        })
+
+class TaskDetailAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            task = Task.objects.get(id=pk, user=request.user)
+            return Response({
+                "status": "success",
+                "task": {
+                    "id": task.id,
+                    "title": task.title,
+                    "description": task.description,
+                    "complete": task.complete,
+                    "due_date": task.due_date.isoformat() if task.due_date else None
+                },
+                "now": timezone.now().isoformat()
+            })
+        except Task.DoesNotExist:
+            return Response({"status": "error", "message": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+
+class TaskCreateAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        task = Task.objects.create(
+            user=request.user,
+            title=request.data.get('title'),
+            description=request.data.get('description'),
+            complete=request.data.get('complete', False),
+            due_date=request.data.get('due_date')
+        )
+        return Response({
+            "status": "success",
+            "message": "Task created",
+            "task_id": task.id
+        }, status=status.HTTP_201_CREATED)
+
+class TaskUpdateAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            task = Task.objects.get(id=pk, user=request.user)
+            task.title = request.data.get('title', task.title)
+            task.description = request.data.get('description', task.description)
+            task.complete = request.data.get('complete', task.complete)
+            task.due_date = request.data.get('due_date', task.due_date)
+            task.save()
+            return Response({
+                "status": "success",
+                "message": "Task updated",
+                "task_id": task.id
+            })
+        except Task.DoesNotExist:
+            return Response({"status": "error", "message": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+
+class TaskDeleteAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            task = Task.objects.get(id=pk, user=request.user)
+            task.delete()
+            return Response({
+                "status": "success",
+                "message": "Task deleted"
+            })
+        except Task.DoesNotExist:
+            return Response({"status": "error", "message": "Task not found"}, status=status.HTTP_404_NOT_FOUND)

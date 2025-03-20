@@ -41,7 +41,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'base.apps.BaseConfig',
+    'rest_framework',
+    'rest_framework_simplejwt',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -141,3 +152,5 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CSRF_TRUSTED_ORIGINS = ['http://10.145.62.197','http://localhost', 'http://192.168.14.47']  # For CSRF with Nginx
 
 # ["https://todo-app-4kmm.onrender.com"]
+# At the bottom of settings.py
+LOGOUT_REDIRECT_URL = 'login'  # Redirect to the 'login' URL name after logout
