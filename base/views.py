@@ -5,11 +5,13 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormVi
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 
 from .models import Task
 
@@ -17,22 +19,83 @@ from .models import Task
 
 class CustomLoginView(LoginView):
     template_name = 'base/login.html'
-    # fields = '__all__'
     redirect_authenticated_user = True
 
-    # def form_valid(self, form):
-    #     # response = super().form_valid(form)
-
     def form_valid(self, form):
-        response = super().form_valid(form)
+        print("Form valid, user:", form.cleaned_data['username'])
+        response = super().form_valid(form)  # Handles authentication and login
         if 'json' in self.request.headers.get('Accept', '').lower():
-                return JsonResponse({
+            return JsonResponse({
                 "status": "success",
                 "message": "Login worked",
                 "redirect_to": self.get_success_url()
-                # "accept_header": self.request.headers.get('Accept', 'Not sent')
             })
         return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse_lazy('tasks')
+
+# @method_decorator(csrf_exempt, name='dispatch')
+# class CustomLoginView(LoginView):
+#     template_name = 'base/login.html'
+#     # fields = '__all__'
+#     redirect_authenticated_user = True
+
+    # def form_valid(self, form):
+    #     # response = super().form_valid(form)
+    # def post(self, request, *args, **kwargs):
+    #     print("POST data:", request.POST)
+    #     return super().post(request, *args, **kwargs)
+
+    # def form_valid(self, form):
+    #     print("Form valid, user:", form.cleaned_data['username'])
+    #     # Manually authenticate and log in
+    #     user = authenticate(
+    #         request=self.request,
+    #         username=form.cleaned_data['username'],
+    #         password=form.cleaned_data['password']
+    #     )
+    #     if user is not None:
+    #         login(self.request, user)
+    #         print("User logged in:", user)
+    #     else:
+    #         print("Authentication failed")
+    #     # Force JSON to test
+    #     return JsonResponse({
+    #         "status": "success",
+    #         "message": "Login worked - manual",
+    #         "redirect_to": self.get_success_url()
+    #     })
+
+    # def form_valid(self, form):
+    #     print("Form valid, user:", form.cleaned_data['username'])
+    #     # Manually authenticate and log in
+    #     user = authenticate(
+    #         request=self.request,
+    #         username=form.cleaned_data['username'],
+    #         password=form.cleaned_data['password']
+    #     )
+    #     if user is not None:
+    #         login(self.request, user)
+    #     # Return response based on Accept header
+    #     if 'json' in self.request.headers.get('Accept', '').lower():
+    #         return JsonResponse({
+    #             "status": "success",
+    #             "message": "Login worked",
+    #             "redirect_to": self.get_success_url()
+    #         })
+    #     response = super().form_valid(form)
+    #     if 'json' in self.request.headers.get('Accept', '').lower():
+    #             return JsonResponse({
+    #             "status": "success",
+    #             "message": "Login worked",
+    #             "redirect_to": self.get_success_url()
+    #             # "accept_header": self.request.headers.get('Accept', 'Not sent')
+    #         })
+    #     return HttpResponseRedirect(self.get_success_url())
+    
+    # def get_success_url(self):
+    #     return reverse_lazy('tasks') #print username
         
         # if self.request.headers.get('Accept') == 'application/json':
         #     # Postman or API client: return JSON
@@ -49,8 +112,7 @@ class CustomLoginView(LoginView):
         #     # "redirect_to":self.get_success_url
         # })
 
-    def get_success_url(self):
-        return reverse_lazy('tasks') #print username
+    
 
 #class CustomLoginView(LoginView):
     # template_name = 'base/login.html'
@@ -66,11 +128,20 @@ class RegisterPage(FormView):
     redirect_authenticated_user = True
     success_url = reverse_lazy('tasks')
 
+
     def form_valid(self, form):
         user = form.save()
-        if user is not None:
-            login(self.request, user)
-        return super(RegisterPage, self).form_valid(form)
+        # if user is not None:
+        login(self.request, user)
+        # 
+        response = super().form_valid(form)  # Prepares the success response
+        if 'json' in self.request.headers.get('Accept', '').lower():
+            return JsonResponse({
+                "status": "success",
+                "message": "Registration and login worked",
+                "redirect_to": self.success_url
+            })
+        return HttpResponseRedirect(self.success_url)
     
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated:
@@ -78,7 +149,17 @@ class RegisterPage(FormView):
         return super(RegisterPage, self).get(*args, **kwargs)
 
 
-class TaskList(LoginRequiredMixin,ListView):
+# class TaskList(LoginRequiredMixin,ListView):
+#     model = Task
+#     context_object_name = 'tasks'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['tasks'] = context['tasks'].filter(user=self.request.user)
+#         context['count'] = context['tasks'].filter(complete=False).count()
+#         context['now'] = timezone.now() #add current time for due soon highlighting
+#         return context
+class TaskList(LoginRequiredMixin, ListView):
     model = Task
     context_object_name = 'tasks'
 
@@ -86,10 +167,31 @@ class TaskList(LoginRequiredMixin,ListView):
         context = super().get_context_data(**kwargs)
         context['tasks'] = context['tasks'].filter(user=self.request.user)
         context['count'] = context['tasks'].filter(complete=False).count()
-        context['now'] = timezone.now() #add current time for due soon highlighting
+        context['now'] = timezone.now()
         return context
 
-class TaskDetail(LoginRequiredMixin,DetailView):
+    def render_to_response(self, context, **response_kwargs):
+        if 'json' in self.request.headers.get('Accept', '').lower():
+            tasks = list(context['tasks'].values('id', 'title', 'description', 'complete', 'due_date'))
+            return JsonResponse({
+                "status": "success",
+                "tasks": tasks,
+                "count": context['count'],
+                "now": context['now'].isoformat()
+            })
+        return super().render_to_response(context, **response_kwargs)   
+
+# class TaskDetail(LoginRequiredMixin,DetailView):
+#     model = Task
+#     context_object_name = 'task'
+#     template_name = 'base/task.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['now'] = timezone.now()
+#         return context 
+#     #to show more task details
+class TaskDetail(LoginRequiredMixin, DetailView):
     model = Task
     context_object_name = 'task'
     template_name = 'base/task.html'
@@ -97,29 +199,89 @@ class TaskDetail(LoginRequiredMixin,DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['now'] = timezone.now()
-        return context 
-    #to show more task details
+        return context
 
-class TaskCreate(LoginRequiredMixin,CreateView):
+    def render_to_response(self, context, **response_kwargs):
+        if 'json' in self.request.headers.get('Accept', '').lower():
+            task = context['task']
+            return JsonResponse({
+                "status": "success",
+                "task": {
+                    "id": task.id,
+                    "title": task.title,
+                    "description": task.description,
+                    "complete": task.complete,
+                    "due_date": task.due_date.isoformat() if task.due_date else None
+                },
+                "now": context['now'].isoformat()
+            })
+        return super().render_to_response(context, **response_kwargs)
+
+# class TaskCreate(LoginRequiredMixin,CreateView):
+#     model = Task
+#     fields = ['title', 'description', 'complete', 'due_date'] #added due_date for cron job
+#     success_url = reverse_lazy('tasks')
+
+#     def form_valid(self, form):
+#         form.instance.user = self.request.user
+#         return super(TaskCreate, self).form_valid(form)
+class TaskCreate(LoginRequiredMixin, CreateView):
     model = Task
-    fields = ['title', 'description', 'complete', 'due_date'] #added due_date for cron job
+    fields = ['title', 'description', 'complete', 'due_date']
     success_url = reverse_lazy('tasks')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        return super(TaskCreate, self).form_valid(form)
+        response = super().form_valid(form)
+        if 'json' in self.request.headers.get('Accept', '').lower():
+            return JsonResponse({
+                "status": "success",
+                "message": "Task created",
+                "task_id": self.object.id,
+                "redirect_to": self.success_url
+            })
+        return HttpResponseRedirect(self.success_url)
 
-class TaskUpdate(LoginRequiredMixin,UpdateView):
+# class TaskUpdate(LoginRequiredMixin,UpdateView):
+#     model = Task
+#     fields = ['title', 'description', 'complete', 'due_date'] #added due_date for cron job
+#     success_url = reverse_lazy('tasks')
+class TaskUpdate(LoginRequiredMixin, UpdateView):
     model = Task
-    fields = ['title', 'description', 'complete', 'due_date'] #added due_date for cron job
+    fields = ['title', 'description', 'complete', 'due_date']
     success_url = reverse_lazy('tasks')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if 'json' in self.request.headers.get('Accept', '').lower():
+            return JsonResponse({
+                "status": "success",
+                "message": "Task updated",
+                "task_id": self.object.id,
+                "redirect_to": self.success_url
+            })
+        return HttpResponseRedirect(self.success_url)
 
 #reminded isn’t included in fields because it’s managed by the cron job, not the user
 
-class DeleteView(LoginRequiredMixin,DeleteView):
+# class DeleteView(LoginRequiredMixin,DeleteView):
+#     model = Task
+#     context_object_name = 'task'
+#     success_url = reverse_lazy('tasks')
+class DeleteView(LoginRequiredMixin, DeleteView):
     model = Task
     context_object_name = 'task'
     success_url = reverse_lazy('tasks')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if 'json' in self.request.headers.get('Accept', '').lower():
+            return JsonResponse({
+                "status": "success",
+                "message": "Task deleted",
+                "redirect_to": self.success_url
+            })
+        return HttpResponseRedirect(self.success_url)
 
 
     #how to do it in falsk ---this part
