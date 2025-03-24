@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
-
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,7 +30,7 @@ DEBUG = True
 # ALLOWED_HOSTS = ['10.145.62.197', 'localhost', '127.0.0.1', '*', '192.168.14.47']  # Your private IP
 ALLOWED_HOSTS = ['*']
 
-
+AUTH_USER_MODEL = 'base.CustomUser'
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,6 +44,18 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+]
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+}
+
+AUTHENTICATION_BACKENDS = [
+    'base.auth.JWTBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 REST_FRAMEWORK = {
@@ -63,6 +75,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'base.auth.JWTMiddleware',
 ]
 
 ROOT_URLCONF = 'todo_list.urls'
