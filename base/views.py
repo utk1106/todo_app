@@ -14,6 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Task
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -54,7 +55,18 @@ class LogoutAPI(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             token = RefreshToken(refresh_token)
-            token.blacklist()
+            # token.blacklist()
+            # Manually blacklist the token
+            outstanding_token, _ = OutstandingToken.objects.get_or_create(
+                jti=token["jti"],
+                defaults={
+                    "token": str(token),
+                    "user_id": token["user_id"],
+                    "exp": token["exp"],
+                }
+            )
+            BlacklistedToken.objects.get_or_create(token=outstanding_token)
+            
             return Response(
                 {"status": "success", "message": "Successfully logged out"},
                 status=status.HTTP_200_OK
