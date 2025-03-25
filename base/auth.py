@@ -1,4 +1,5 @@
 # base/auth.py
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.backends import BaseBackend
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth import get_user_model
@@ -22,6 +23,10 @@ class JWTMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        # Ensure request.user is at least AnonymousUser if not set by AuthenticationMiddleware
+        if not hasattr(request, 'user'):
+            request.user = AnonymousUser()
+
         access_token = request.session.get('access_token')
         if access_token:
             try:
@@ -29,5 +34,6 @@ class JWTMiddleware:
                 validated_token = jwt_auth.get_validated_token(access_token)
                 request.user = jwt_auth.get_user(validated_token)
             except Exception:
-                request.user = None
+                # request.user = None
+                pass
         return self.get_response(request)

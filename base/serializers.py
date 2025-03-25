@@ -2,13 +2,20 @@
 from rest_framework import serializers
 from .models import CustomUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+import re
 
 class CustomUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = CustomUser
-        fields = ['phone_number', 'username', 'password']
+        fields = ['phone_number', 'username','email','password']
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'email': {'required': True},  # Enforce required
+            'phone_number': {'required': True},
+            'username': {'required': True}
+        }
 
     def validate_phone_number(self, value):
         # Regex: Starts with +, followed by 1-3 digit country code, then 10 digits
@@ -23,6 +30,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
+            email=validated_data['email'],
             phone_number=validated_data['phone_number'],
             username=validated_data['username'],
             password=validated_data['password']

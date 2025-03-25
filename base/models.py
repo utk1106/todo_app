@@ -27,7 +27,7 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=15, unique=True)  # e.g., +1234567890
     username = models.CharField(max_length=150, unique=True)     # For display purposes
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField(unique=True, blank=False, null=False)  # Make required
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -65,6 +65,7 @@ class Task(models.Model):
     create = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField(null=True, blank=True) #added for cron job
     reminded = models.BooleanField(default=False)  # Added for cron job
+    popup_reminder = models.BooleanField(default=False)  # New field for popup
 
     #after adding due_date and reminded and running python3 manage.py makemigrations, migration folder added new field
     # and after than running python3 manage.py migrate, the new field was added to the database sql3

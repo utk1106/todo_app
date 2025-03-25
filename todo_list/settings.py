@@ -134,7 +134,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -154,13 +154,15 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'  # Where static files will be collected
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'thaokarutkarsh@gmail.com'  # Replace with your Gmail address
-EMAIL_HOST_PASSWORD = 'rubv ikqq snyw mqdg'  # Replace with your app password
+EMAIL_HOST_PASSWORD = 'yvdn sbpn rbor xwhx'#rubv ikqq snyw mqdg'  # Replace with your app password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 CSRF_TRUSTED_ORIGINS = ['http://10.145.62.197','http://localhost', 'http://192.168.14.47']  # For CSRF with Nginx
