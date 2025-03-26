@@ -651,6 +651,7 @@ class RegisterAPI(APIView):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+print("Hello from the test branch!")
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
