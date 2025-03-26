@@ -650,7 +650,7 @@ class RegisterAPI(APIView):
             {"status": "error", "message": serializer.errors},
             status=status.HTTP_400_BAD_REQUEST
         )
-
+print("Hello from the main branch!")
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
