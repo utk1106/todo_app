@@ -4,3 +4,8 @@ cron.logcron.log
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+myenv/
+venv/
+db.sqlite3
+cron.log
+crontab
