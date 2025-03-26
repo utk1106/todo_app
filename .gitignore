@@ -9,7 +9,7 @@ myenv/
 venv/
 db.sqlite3
 crontab
-# *.pem
+*.pem
 base/__pycache__/
 logs/
 # *.pyc
