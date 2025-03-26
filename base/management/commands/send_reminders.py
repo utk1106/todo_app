@@ -9,13 +9,16 @@ class Command(BaseCommand):
     help = 'Sends email reminders for tasks due soon'
 
     def handle(self, *args, **options):
-        # Find tasks that are due within the next 24 hours and haven't been reminded yet
-        reminder_threshold = timezone.now() + timedelta(hours=24)
+        # Find tasks due within the next 10 minutes (updated logic)
+        now = timezone.now()
+        reminder_threshold_start = now
+        reminder_threshold_end = now + timedelta(minutes=10)
         tasks_to_remind = Task.objects.filter(
             complete=False,
             reminded=False,
             due_date__isnull=False,
-            due_date__lte=reminder_threshold
+            due_date__gte=reminder_threshold_start,
+            due_date__lte=reminder_threshold_end
         )
         
         self.stdout.write(f"Found {tasks_to_remind.count()} tasks that need reminders")
@@ -44,7 +47,7 @@ class Command(BaseCommand):
             subject = "Reminder: You have tasks due soon"
             message = f"""Hello {user.username},
 
-You have the following tasks due within the next 24 hours:
+You have the following tasks due within the next 10 minutes:
 
 {task_list}
 
