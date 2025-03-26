@@ -4,3 +4,19 @@ cron.logcron.log
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+myenv/
+venv/
+db.sqlite3
+crontab
+# *.pem
+base/__pycache__/
+logs/
+# *.pyc
+__pycache__/
+todo_list/__pycache__/
+base/management/commands/
+base/migrations/
+__init__.pyc
+*.log
+cron.log
