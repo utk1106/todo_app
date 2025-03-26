@@ -1,9 +1,8 @@
-cron.logcron.log
-
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
+myenv/
+venv/
+cron.log
+crontab
+db.sqlite3
 myenv/
 venv/
 db.sqlite3
