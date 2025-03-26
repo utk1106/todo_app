@@ -1,12 +1,12 @@
-myenv/
 venv/
-cron.log
-crontab
-db.sqlite3
 myenv/
-venv/
+
+# Ignore database and logs
 db.sqlite3
 cron.log
 crontab
-*.pem
+
+# Ignore compiled Python files
 *.pyc
+__pycache__/
+*.pem
