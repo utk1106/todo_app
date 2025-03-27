@@ -1,4 +1,4 @@
 # Run Django management commands every 10 minutes
-*/10 * * * * /bin/bash -c "export DJANGO_SETTINGS_MODULE=todo_list.settings && cd /home/utkarsh/todo_list && /home/utkarsh/todo_list/myenv/bin/python3 /home/utkarsh/todo_list/manage.py send_reminders >> /home/utkarsh/todo_list/cron.log 2>&1"
-*/10 * * * * /bin/bash -c "export DJANGO_SETTINGS_MODULE=todo_list.settings && cd /home/utkarsh/todo_list && /home/utkarsh/todo_list/myenv/bin/python3 /home/utkarsh/todo_list/manage.py mark_popup_reminders >> /home/utkarsh/todo_list/cron.log 2>&1"
+*/10 * * * * /bin/bash -c "export DJANGO_SETTINGS_MODULE=todo_list.settings && cd /app && /usr/local/bin/python3 /app/manage.py send_reminders >> /app/cron.log 2>&1"
+*/10 * * * * /bin/bash -c "export DJANGO_SETTINGS_MODULE=todo_list.settings && cd /app && /usr/local/bin/python3 /app/manage.py mark_popup_reminders >> /app/cron.log 2>&1"
 #
