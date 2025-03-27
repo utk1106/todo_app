@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-
-=======
 # Django To-Do List with Popup Reminders
 
 ## Overview
@@ -134,4 +131,3 @@ exit()
 
 ---
 Now you're all set to use the Django To-Do List with popup reminders! 🚀
->>>>>>> 276a8dd (added readme.md)
