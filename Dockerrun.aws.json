@@ -1,7 +1,7 @@
 {
     "AWSEBDockerrunVersion": "1",
     "Image": {
-      "Name": "721607229558.dkr.ecr.ap-south-1.amazonaws.com/todo-app:v2",
+      "Name": "721607229558.dkr.ecr.ap-south-1.amazonaws.com/todo-app:v3",
       "Update": "true"
     },
     "Ports": [
