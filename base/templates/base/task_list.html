@@ -82,14 +82,16 @@
     </div>
 </body>
 </html> -->
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My To Do List</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
         /* Style the popup */
         #popup {
@@ -102,96 +104,109 @@
             border-radius: 5px;
             display: none;
             z-index: 1000; /* Ensure it’s on top */
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: #000;
+        }
+
+        body {
+            background-image: url("{% static 'images/background.png' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .bg-light {
+            background-color: rgba(255, 255, 255, 0.9) !important;
         }
     </style>
 </head>
 <body>
-    <div class="container mt-5">
+    <div class="header-container">
         {% if request.user.is_authenticated %}
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Welcome, {{ request.user.username }}!</h2>
-                <form method="POST" action="{% url 'logout' %}" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Logout</button>
-                </form>
-            </div>
+            <div class="welcome-message">Welcome, {{ request.user.username }}!</div>
+            <form method="POST" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">LOGOUT</button>
+            </form>
         {% else %}
-            <p><a href="{% url 'login' %}" class="btn btn-primary">Login</a></p>
+            <a href="{% url 'login' %}" class="btn btn-primary">LOGIN</a>
         {% endif %}
+        
+        <div class="header-title">MY TO DO LIST</div>
+        <a href="{% url 'task-create' %}" class="add-task-btn">+ NEW QUEST</a>
+    </div>
 
-        <h1 class="mb-4">My To Do List</h1>
-        <p><a href="{% url 'task-create' %}" class="btn btn-primary mb-3">Add Task</a></p>
-
-        <!-- Popup div -->
         <div id="popup">
             <h4>Task Reminder</h4>
             <p id="popup-message"></p>
             <button onclick="document.getElementById('popup').style.display='none'" class="btn btn-sm btn-secondary">Dismiss</button>
         </div>
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Due Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for task in tasks %}
-                <tr>
-                    <td>
-                        {% if task.complete %}
-                            <s>{{ task.title }}</s>
-                        {% else %}
-                            {{ task.title }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if task.due_date %}
-                            {{ task.due_date|date:"M d, Y - h:i a" }}
-                            {% if task.reminded %}
-                                <span class="badge bg-info ms-2">Reminder sent</span>
-                            {% endif %}
-                            <!-- {% if task.popup_reminder %}
-                                <span class="badge bg-danger ms-2">Popup Reminder</span>
-                            {% endif %} -->
-                        {% else %}
-                            No due date
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if task.complete %}
-                            <span class="badge bg-success">Completed</span>
-                        {% elif task.due_date and task.due_date < now %}
-                            <span class="badge bg-danger">Overdue</span>
-                        {% elif task.due_date and task.due_date|date:'Y-m-d' == now|date:'Y-m-d' %}
-                            <span class="badge bg-warning">Due today</span>
-                        {% else %}
-                            <span class="badge bg-secondary">Pending</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'task' task.id %}" class="btn btn-sm btn-info">View</a>
-                        <a href="{% url 'task-update' task.id %}" class="btn btn-sm btn-warning">Edit</a>
-                        <a href="{% url 'task-delete' task.id %}" class="btn btn-sm btn-danger">Delete</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4">
-                        <h3>No items in list</h3>
-                        <p>Create your first task by clicking <a href="{% url 'task-create' %}" class="btn btn-primary">Add Task</a></p>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasks %}
+                        <tr>
+                            <td>
+                                {% if task.complete %}
+                                    <s>{{ task.title }}</s>
+                                {% else %}
+                                    {{ task.title }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if task.due_date %}
+                                    {{ task.due_date|date:"M d, Y - h:i a" }}
+                                    {% if task.reminded %}
+                                        <span class="badge bg-info ms-2">Reminder sent</span>
+                                    {% endif %}
+                                {% else %}
+                                    No due date
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if task.complete %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% elif task.due_date and task.due_date < now %}
+                                    <span class="badge bg-danger">Overdue</span>
+                                {% elif task.due_date and task.due_date|date:'Y-m-d' == now|date:'Y-m-d' %}
+                                    <span class="badge bg-warning">Due today</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td class="action-buttons">
+                                <a href="{% url 'task' task.id %}" class="btn btn-info">View</a>
+                                <a href="{% url 'task-update' task.id %}" class="btn btn-warning">Edit</a>
+                                <a href="{% url 'task-delete' task.id %}" class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">
+                                <h3 class="text-center">No items in list</h3>
+                                <p class="text-center">Create your first task by clicking <a href="{% url 'task-create' %}" class="btn btn-primary">Add Task</a></p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Check for popup-eligible tasks every 10 seconds
         function checkPopupReminders() {
             const tasks = [
                 {% for task in tasks %}
@@ -208,8 +223,8 @@
 
             tasks.forEach(task => {
                 if (task.popup_reminder && task.user === currentUser) {
-                    const dueDate = new Date(task.due_date + ":00"); // Add seconds for consistency
-                    const timeDiff = (dueDate - now) / (1000 * 60); // Minutes remaining
+                    const dueDate = new Date(task.due_date + ":00");
+                    const timeDiff = (dueDate - now) / (1000 * 60);
                     if (timeDiff <= 10 && timeDiff > 0) {
                         const popup = document.getElementById('popup');
                         document.getElementById('popup-message').innerText = 
@@ -220,9 +235,9 @@
             });
         }
 
-        // Run on page load and every 10 seconds
         window.onload = checkPopupReminders;
-        setInterval(checkPopupReminders, 10000); // 10 seconds
+        setInterval(checkPopupReminders, 10000);
     </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9295a7d95b10b0bd',t:'MTc0MzQ4NTAxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
