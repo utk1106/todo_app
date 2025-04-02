@@ -20,3 +20,7 @@ base/migrations/
 __init__.pyc
 *.log
 cron.log
+
+# Static files (if using collectstatic)
+staticfiles/admin/
+staticfiles/rest_framework/

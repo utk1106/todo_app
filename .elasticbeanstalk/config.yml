@@ -1,14 +1,21 @@
 branch-defaults:
+  center-alignment:
+    environment: null
+    group_suffix: null
   default:
     environment: todo-env
     group_suffix: null
   main:
     environment: null
+environment-defaults:
+  todo-newenv:
+    branch: null
+    repository: null
 global:
-  application_name: todo-app
+  application_name: ap-south-1
   branch: null
-  default_ec2_keyname: null
-  default_platform: Docker
+  default_ec2_keyname: ebs1-key
+  default_platform: Python 3.8 running on 64bit Amazon Linux 2
   default_region: ap-south-1
   include_git_submodules: true
   instance_profile: null

@@ -1,0 +1,264 @@
+/* TODO_LIST/base/static/css/retro_styles.css */
+/* Header Styling */
+.header-container {
+    position: relative; /* Needed for absolute positioning of logout */
+    text-align: center;
+    margin-bottom: 30px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 40px 20px 20px; /* More top padding for logout */
+    border: 4px solid #fff;
+    border-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGUlEQVQYV2NkYGD4z8DAwMDI8NChoaGBAQABZgB5vK5z5gAAAABJRU5ErkJggg==") 4 stretch;
+    box-shadow: 8px 8px 0 #000;
+}
+
+.header-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 24px;
+    color: #00ff00; /* Neon green */
+    text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+    margin-bottom: 15px;
+}
+
+.welcome-message {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 18px;
+    color: #00b7eb; /* Cyan blue */
+    text-shadow: 0 0 8px #00b7eb;
+    margin-bottom: 10px;
+}
+
+.table-container {
+    margin: 20px auto;
+    max-width: 90%;
+    background: rgba(0, 0, 0, 0.8);
+    border: 4px solid #fff;
+    border-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGUlEQVQYV2NkYGD4z8DAwMDI8NChoaGBAQABZgB5vK5z5gAAAABJRU5ErkJggg==") 4 stretch;
+    padding: 10px;
+    box-shadow: 8px 8px 0 #000; /* Blocky shadow for retro effect */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    color: #fff;
+}
+
+th {
+    background: #ff4040;
+    color: #fff;
+    padding: 10px;
+    text-transform: uppercase;
+    border: 2px solid #000;
+    border-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGUlEQVQYV2NkYGD4z8DAwMDI8NChoaGBAQABZgB5vK5z5gAAAABJRU5ErkJggg==") 2 stretch;
+}
+
+tr {
+    background: #4040ff;
+}
+
+tr:nth-child(even) {
+    background: #6060ff;
+}
+
+tr:hover {
+    background: #00ff00;
+}
+
+td {
+    padding: 10px;
+    text-align: left;
+    border: 2px solid #000;
+    border-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGUlEQVQYV2NkYGD4z8DAwMDI8NChoaGBAQABZgB5vK5z5gAAAABJRU5ErkJggg==") 2 stretch;
+}
+
+td.status-overdue {
+    color: #ff4040;
+}
+
+td.status-completed {
+    color: #00ff00;
+}
+
+.action-buttons button {
+    padding: 8px 12px;
+    margin: 0 5px;
+    border: 2px solid #000;
+    border-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGUlEQVQYV2NkYGD4z8DAwMDI8NChoaGBAQABZgB5vK5z5gAAAABJRU5ErkJggg==") 2 stretch;
+    background: #ff4040;
+    color: #fff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.action-buttons button:hover {
+    background: #00ff00;
+}
+
+.action-buttons .view-btn {
+    background: #00b7eb;
+}
+
+.action-buttons .edit-btn {
+    background: #ffff00;
+    color: #000;
+}
+
+.action-buttons .delete-btn {
+    background: #ff4040;
+}
+
+.action-buttons .reminder-btn {
+    background: #c0c0c0;
+    color: #000;
+}
+
+.table .badge.bg-danger {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.table tbody tr {
+    background: #3030cc; /* Darker blue */
+}
+
+.table tbody tr:nth-child(even) {
+    background: #5050dd; /* Slightly lighter blue */
+}
+
+/* Action Buttons with Retro Glow */
+.action-buttons a {
+    padding: 8px 12px;
+    margin: 0 5px;
+    border: 2px solid #000;
+    border-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGUlEQVQYV2NkYGD4z8DAwMDI8NChoaGBAQABZgB5vK5z5gAAAABJRU5ErkJggg==") 2 stretch;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+/* View Button - Neon Blue */
+.btn-info {
+    background: #00b7eb;
+    color: #000;
+    text-shadow: 0 0 8px #00b7eb;
+    box-shadow: 0 0 10px #00b7eb;
+}
+
+/* Edit Button - Yellow */
+.btn-warning {
+    background: #ffff00;
+    color: #000;
+    text-shadow: 0 0 8px #ffff00;
+    box-shadow: 0 0 10px #ffff00;
+}
+
+/* Delete Button - Red */
+.btn-danger {
+    background: #ff4040;
+    color: #fff;
+    text-shadow: 0 0 8px #ff4040;
+    box-shadow: 0 0 10px #ff4040;
+}
+
+/* Hover Effects */
+.action-buttons a:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.header-title {
+    animation: pulse 2s infinite;
+}
+
+/* Retro Logout Button */
+.logout-form {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.logout-btn {
+    background: #ff4040;
+    color: white;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    padding: 10px 15px;
+    border: 3px solid #000;
+    border-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGUlEQVQYV2NkYGD4z8DAwMDI8NChoaGBAQABZgB5vK5z5gAAAABJRU5ErkJggg==") 3 stretch;
+    box-shadow: 4px 4px 0 #000;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-shadow: 0 0 8px #ff4040;
+}
+
+.logout-btn:hover {
+    background: #ff0000;
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0 #000;
+    text-shadow: 0 0 12px #ff4040;
+}
+
+/* Add Task Button */
+.add-task-btn {
+    display: inline-block;
+    background: #00ff00;
+    color: #000;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    padding: 10px 15px;
+    margin-top: 15px;
+    border: 3px solid #000;
+    border-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGUlEQVQYV2NkYGD4z8DAwMDI8NChoaGBAQABZgB5vK5z5gAAAABJRU5ErkJggg==") 3 stretch;
+    box-shadow: 4px 4px 0 #000;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.add-task-btn:hover {
+    background: #00cc00;
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0 #000;
+}
+
+/* Very subtle CRT effect */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        /* Extremely faint scanlines */
+        linear-gradient(
+            rgba(18, 16, 16, 0.1) 50%, 
+            rgba(0, 0, 0, 0.05) 50%
+        ),
+        /* Almost imperceptible color bleed */
+        linear-gradient(
+            90deg, 
+            rgba(255, 0, 0, 0.01), 
+            rgba(0, 255, 0, 0.005), 
+            rgba(0, 0, 255, 0.01)
+        );
+    background-size: 100% 3px, 3px 100%;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.15; /* Very transparent */
+    mix-blend-mode: overlay;
+}
