@@ -7,3 +7,4 @@ phonenumbers==9.0.2
 PyJWT==2.9.0
 setuptools==77.0.3
 sqlparse==0.4.4
+djangorestframework

@@ -32,6 +32,8 @@ RUN chmod 0644 /etc/cron.d/my-cron-job && crontab /etc/cron.d/my-cron-job
 EXPOSE 8000
 # EXPOSE 8000: Opens port 8000 for the app.
 
+RUN apt-get update && apt-get install -y sqlite3 && rm -rf /var/lib/apt/lists/*
+
 CMD cron && gunicorn todo_list.wsgi:application --bind 0.0.0.0:8000
 # CMD ["gunicorn", "todo_list.wsgi:application", "--bind", "0.0.0.0:8000"]
 # CMD: Runs Gunicorn to serve the Django app on port 8000.
