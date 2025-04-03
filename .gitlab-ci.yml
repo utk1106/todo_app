@@ -28,18 +28,20 @@ build_job:
 
 test_job:
   stage: test
-  image: python:3.11-slim
+  image: docker:20.10
   services:
     - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
   before_script:
-    - apt-get update
-    - apt-get install -y docker.io
-    - apt-get install -y python3-pip
+    - apk add --no-cache python3 py3-pip
+    - pip3 install --upgrade pip
     - pip3 install awscli --upgrade
     - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
     - aws configure set region ap-south-1
     - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
+    - until docker info; do echo "Waiting for Docker daemon..."; sleep 1; done
     - docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
   script:
     - docker run --rm $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG /bin/bash -c "pip install -r requirements.txt && python manage.py test"
