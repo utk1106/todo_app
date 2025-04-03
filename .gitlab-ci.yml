@@ -1,0 +1,74 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  ECR_REGISTRY: "721607229558.dkr.ecr.ap-south-1.amazonaws.com"
+  ECR_REPOSITORY: "todo-app"
+  IMAGE_TAG: "$CI_COMMIT_SHA"
+
+build_job:
+  stage: build
+  image: docker:20.10
+  services:
+    - docker:dind
+  before_script:
+    - apk add --no-cache python3 py3-pip
+    - pip install awscli
+    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - aws configure set region ap-south-1
+  script:
+    - docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
+    - docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    - docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+    - docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+test_job:
+  stage: test
+  image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  script:
+    - pip install -r requirements.txt
+    - python manage.py test
+
+deploy_test:
+  stage: deploy
+  image: alpine:latest
+  when: manual
+  before_script:
+    - apk add --no-cache openssh-client bash curl
+    - mkdir -p ~/.ssh
+    - echo "$TEST_EC2_SSH_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $TEST_EC2_HOST >> ~/.ssh/known_hosts
+  script:
+    - ssh -o StrictHostKeyChecking=no $TEST_EC2_USERNAME@$TEST_EC2_HOST "
+        aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_REGISTRY &&
+        docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG &&
+        docker stop todo-app-test || true &&
+        docker rm todo-app-test || true &&
+        docker run -d --name todo-app-test -p 80:8000 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG &&
+        sleep 5 &&
+        curl -f http://localhost:80/api/tasks/ || exit 1"
+
+deploy_main:
+  stage: deploy
+  image: alpine:latest
+  when: manual
+  before_script:
+    - apk add --no-cache openssh-client bash curl
+    - mkdir -p ~/.ssh
+    - echo "$MAIN_EC2_SSH_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $MAIN_EC2_HOST >> ~/.ssh/known_hosts
+  script:
+    - ssh -o StrictHostKeyChecking=no $MAIN_EC2_USERNAME@$MAIN_EC2_HOST "
+        aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_REGISTRY &&
+        docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG &&
+        docker stop todo-app || true &&
+        docker rm todo-app || true &&
+        docker run -d --name todo-app -p 80:8000 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG &&
+        sleep 5 &&
+        curl -f http://localhost:80/api/tasks/ || exit 1"
