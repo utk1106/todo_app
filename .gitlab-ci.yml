@@ -58,13 +58,24 @@ deploy_test:
     - ssh-keyscan -H $TEST_EC2_HOST >> ~/.ssh/known_hosts
   script:
     - ssh -o StrictHostKeyChecking=no $TEST_EC2_USERNAME@$TEST_EC2_HOST "
+        if ! docker info >/dev/null 2>&1; then
+          echo 'Docker daemon is not running on the EC2 instance.'
+          exit 1
+        fi &&
         aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_REGISTRY &&
         docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG &&
-        docker stop todo-app-test || true &&
-        docker rm todo-app-test || true &&
-        docker run -d --name todo-app-test -p 80:8000 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG &&
-        sleep 5 &&
-        curl -f http://localhost:80/api/tasks/ || exit 1"
+        if [ -n \"\$(docker ps -a -q -f name=todo-app-test)\" ]; then
+          docker stop todo-app-test || true && docker rm todo-app-test || true
+        fi &&
+        docker run -d --name todo-app-test -p 80:8000 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG || {
+          echo 'Docker run failed. Check logs for details.'
+          exit 1
+        } &&
+        sleep 10 &&
+        until curl -f http://localhost:80/api/tasks/; do
+          echo 'Waiting for application to be ready...'
+          sleep 2
+        done || exit 1"
 
 deploy_main:
   stage: deploy
