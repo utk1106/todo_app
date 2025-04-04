@@ -57,13 +57,16 @@ deploy_test:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H $TEST_EC2_HOST >> ~/.ssh/known_hosts
   script:
-    - ssh -o StrictHostKeyChecking=no $TEST_EC2_USERNAME@$TEST_EC2_HOST "
-        echo 'Testing SSH connection' &&
+    - echo "TEST_EC2_USERNAME: $TEST_EC2_USERNAME"
+    - echo "TEST_EC2_HOST: $TEST_EC2_HOST"
+    - ssh -o StrictHostKeyChecking=no $TEST_EC2_USERNAME@$TEST_EC2_HOST /bin/bash <<'EOF'
+        set -x
+        echo 'Testing SSH connection'
         if ! docker info >/dev/null 2>&1; then
           echo 'Docker daemon is not running on the EC2 instance.'
           exit 1
-        fi &&
-        echo 'Docker daemon is running'"
+        fi
+        echo 'Docker daemon is running'
 
 
 deploy_main:
