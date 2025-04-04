@@ -57,7 +57,8 @@ deploy_test:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H $TEST_EC2_HOST >> ~/.ssh/known_hosts
   script:
-    - ssh -o StrictHostKeyChecking=no $TEST_EC2_USERNAME@$TEST_EC2_HOST "
+    - |
+      ssh -o StrictHostKeyChecking=no $TEST_EC2_USERNAME@$TEST_EC2_HOST "
         aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_REGISTRY &&
         docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG &&
         docker stop todo-app-test || true &&
@@ -65,8 +66,16 @@ deploy_test:
         docker run -d --name todo-app-test -p 8080:8000 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG &&
         echo 'Waiting for application to start...' &&
         sleep 15 &&
-        curl -f http://localhost:8080/ || echo 'Health check endpoint returned non-zero status but continuing...' &&
-        echo 'Deployment completed successfully'"
+        RESPONSE=\$(curl -s localhost:8080/api/tasks/) &&
+        echo \"Response from API: \$RESPONSE\" &&
+        if echo \"\$RESPONSE\" | grep -q \"Authentication credentials were not provided\"; then
+          echo 'API is up and running properly (requires authentication)' &&
+          echo 'Deployment completed successfully'
+        else
+          echo 'Unexpected response from API' &&
+          exit 1
+        fi
+      "
 
 
 deploy_main:
