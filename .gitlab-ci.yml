@@ -34,17 +34,24 @@ test_job:
   variables:
     DOCKER_HOST: tcp://docker:2375
   before_script:
-    - apk add --no-cache python3 py3-pip
-    - pip3 install --upgrade pip
-    - pip3 install awscli --upgrade
+    - apt-get update
+    - apt-get install -y docker.io
+    - apt-get install -y python3-pip
+    - pip3 install awscli requests --upgrade
     - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
     - aws configure set region ap-south-1
     - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
-    - until docker info; do echo "Waiting for Docker daemon..."; sleep 1; done
     - docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    - docker run -d --name test-app -p 8000:8000 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    - sleep 10  # Increased to ensure app starts
   script:
-    - docker run --rm $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG /bin/bash -c "pip install -r requirements.txt && python manage.py test"
+    - docker cp validate_auth.py test-app:/app/validate_auth.py
+    - docker exec test-app python /app/validate_auth.py
+    - docker exec test-app /bin/bash -c "pip install -r requirements.txt && python manage.py test"
+  after_script:
+    - docker stop test-app
+    - docker rm test-app
 
 deploy_test:
   stage: deploy
